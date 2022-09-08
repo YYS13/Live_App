@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "880993709375",
+    "project_id": "fcu-live-project",
+    "storage_bucket": "fcu-live-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880993709375:android:b06af345b35fd5d55b378a",
+        "android_client_info": {
+          "package_name": "com.example.live"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "880993709375-167lp89aco364r1mfr15dsvo2lgph6h3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiJt8xdq9J0MM3EMNQCxFvfALujOh4vGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "880993709375-167lp89aco364r1mfr15dsvo2lgph6h3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
