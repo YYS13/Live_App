@@ -1,15 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:live/widgets/register_form.dart';
+import 'dart:typed_data';
 
-import '../widgets/login_form.dart';
+import 'package:flutter/material.dart';
+import 'package:live/screens/home.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/auth.dart';
 
 class LoginScreen extends StatefulWidget {
+  LoginScreen(this.getState);
+  Function(Stream state) getState; //將登入狀態傳給root用的function
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Stream state;
   final formKey = GlobalKey<FormState>();
+  String registerEmail;
+  String registerPassword;
+  String uid;
   String userName = ""; //姓名
   String userPassword = ""; //密碼
   String userEmail = ""; //信箱
@@ -25,13 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   //針對輸入進行validate，沒問題則儲存輸入內容
-  void trySubmit() {
+  trySubmit() {
     final isValid = formKey.currentState.validate();
     FocusScope.of(context).unfocus(); //送出表單後關閉鍵盤
 
     if (isValid) {
       formKey.currentState.save();
     }
+    return isValid;
   }
 
   @override
@@ -64,13 +74,211 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Form(
                     key: formKey, //做validate的
                     child: IsLogin
-                        ? LoginForm(
-                            trySubmit: trySubmit,
-                            ChangeToRegisterFrom: ChangeToRegisterFrom,
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextFormField(
+                                key: ValueKey("email"),
+                                validator: (value) {
+                                  if (value.isEmpty || !value.contains("@")) {
+                                    return "請輸入有效信箱";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.emailAddress,
+                                decoration:
+                                    InputDecoration(labelText: "帳號(信箱)"),
+                                onSaved: (value) {
+                                  userEmail = value;
+                                  print(value);
+                                },
+                              ),
+                              TextFormField(
+                                key: ValueKey("password"),
+                                validator: (value) {
+                                  if (value.isEmpty || value.length < 7) {
+                                    return "密碼長度至少需7個字元";
+                                  }
+                                },
+                                decoration: InputDecoration(labelText: "密碼"),
+                                obscureText: true,
+                                onSaved: (value) {
+                                  userPassword = value;
+                                },
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              if (IsLoading) CircularProgressIndicator(),
+                              if (!IsLoading)
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    var valid = trySubmit();
+                                    setState(() {
+                                      IsLoading = !IsLoading;
+                                    });
+                                    if (valid) {
+                                      state = await Provider.of<User>(context,
+                                              listen: false)
+                                          .storedLoginData(
+                                              userEmail, userPassword, context);
+                                      widget.getState(state); //將登入狀態傳給root用
+                                    }
+                                    setState(() {
+                                      IsLoading = !IsLoading;
+                                    });
+                                  },
+                                  child: Text(
+                                    "登入",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      padding: EdgeInsets.all(10),
+                                      shape:
+                                          Theme.of(context).buttonTheme.shape),
+                                ),
+                              SizedBox(height: 10),
+                              if (!IsLoading)
+                                ElevatedButton(
+                                  onPressed: () {
+                                    ChangeToRegisterFrom();
+                                  },
+                                  child: Text(
+                                    "註冊",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      padding: EdgeInsets.all(10),
+                                      shape:
+                                          Theme.of(context).buttonTheme.shape),
+                                ),
+                            ],
                           )
-                        : RegisterForm(
-                            trySubmit: trySubmit,
-                            ChangeToRegisterFrom: ChangeToRegisterFrom,
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "請輸入姓名";
+                                  } else if (value.length < 2) {
+                                    return "姓名須超過2個字";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.name,
+                                decoration: InputDecoration(labelText: "姓名"),
+                                onSaved: (value) {
+                                  userName = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "請輸入系所";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(labelText: "系所"),
+                                onSaved: (value) {
+                                  userMajor = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty || !value.contains("@")) {
+                                    return "請輸入有效信箱";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.emailAddress,
+                                decoration:
+                                    InputDecoration(labelText: "帳號(信箱)"),
+                                onSaved: (value) {
+                                  registerEmail = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty || value.length < 7) {
+                                    return "密碼長度至少需7個字元";
+                                  }
+                                },
+                                decoration: InputDecoration(labelText: "密碼"),
+                                obscureText: true,
+                                onSaved: (value) {
+                                  registerPassword = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "請輸入性別";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(labelText: "性別"),
+                                onSaved: (value) {
+                                  userSex = value;
+                                },
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              if (IsLoading) CircularProgressIndicator(),
+                              if (!IsLoading)
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    var valid = trySubmit();
+                                    setState(() {
+                                      IsLoading = !IsLoading;
+                                    });
+                                    if (valid) {
+                                      await Provider.of<User>(context,
+                                              listen: false)
+                                          .storedRigisterData(
+                                              registerEmail,
+                                              registerPassword,
+                                              userName,
+                                              userMajor,
+                                              userSex,
+                                              context);
+                                    }
+                                    setState(() {
+                                      IsLoading = !IsLoading;
+                                    });
+                                  },
+                                  child: Text(
+                                    "確認",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      padding: EdgeInsets.all(10),
+                                      shape:
+                                          Theme.of(context).buttonTheme.shape),
+                                ),
+                              SizedBox(height: 10),
+                              if (!IsLoading)
+                                TextButton(
+                                  onPressed: () {
+                                    ChangeToRegisterFrom();
+                                  },
+                                  child: Text(
+                                    "已有帳戶",
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      padding: EdgeInsets.all(10),
+                                      shape:
+                                          Theme.of(context).buttonTheme.shape),
+                                ),
+                            ],
                           )),
               )),
             ],

@@ -13,7 +13,7 @@ class User with ChangeNotifier {
   String _userSex;
   final _auth = FirebaseAuth.instance;
 
-  void storedLoginData(
+  Future storedLoginData(
       String userEmail, String userPassword, BuildContext ctx) async {
     _userEmail = userEmail;
     _userPassword = userPassword;
@@ -21,14 +21,15 @@ class User with ChangeNotifier {
     try {
       authResult = await _auth.signInWithEmailAndPassword(
           email: _userEmail, password: _userPassword);
-    } on PlatformException catch (err) {
+      return FirebaseAuth.instance.authStateChanges();
+    } on FirebaseAuthException catch (err) {
+      print(err);
       var message = err.message;
+      print(message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text(message),
+        content: Text(message, textAlign: TextAlign.center),
         backgroundColor: Colors.red,
       ));
-    } catch (err) {
-      print(err);
     }
     notifyListeners();
   } //按下登入按鈕執行
@@ -45,6 +46,8 @@ class User with ChangeNotifier {
     _userName = userName;
     _userMajor = userMajor;
     _userSex = userSex;
+    print(userEmail);
+    print(userPassword);
     var authResult;
     try {
       authResult = await _auth.createUserWithEmailAndPassword(
@@ -62,13 +65,7 @@ class User with ChangeNotifier {
         content: Text("註冊成功", textAlign: TextAlign.center),
         backgroundColor: Colors.green[400],
       ));
-    } on PlatformException catch (err) {
-      var message = err.message;
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text(message, textAlign: TextAlign.center),
-        backgroundColor: Colors.red,
-      ));
-    } catch (err) {
+    } on FirebaseAuthException catch (err) {
       var message = err.message;
       switch (message) {
         case "The email address is already in use by another account.":

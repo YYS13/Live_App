@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:live/provider/auth.dart';
+import 'package:live/screens/home.dart';
+import 'package:live/screens/tab_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:live/screens/login_screen.dart';
@@ -11,7 +13,20 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  var LoginState;
+
+  void getState(Stream state) {
+    setState(() {
+      LoginState = state;
+    });
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -29,7 +44,16 @@ class MyApp extends StatelessWidget {
                 buttonColor: Colors.red[900],
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)))),
-        home: LoginScreen(),
+        home: StreamBuilder(
+          stream: LoginState,
+          builder: (ctx, userSnapshot) {
+            if (userSnapshot.hasData) {
+              return TabScreen();
+            } else {
+              return LoginScreen(getState);
+            }
+          },
+        ),
       ),
     );
   }
