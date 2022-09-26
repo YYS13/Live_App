@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:live/screens/home.dart';
 import 'package:provider/provider.dart';
@@ -8,13 +9,79 @@ import '../provider/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen(this.getState);
-  Function(Stream state) getState; //將登入狀態傳給root用的function
+  Function(
+    Stream state,
+  ) getState; //將登入狀態傳給root用的function
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Stream state;
+  List<DropdownMenuItem> major = [
+    DropdownMenuItem(
+      child: Text("資工系"),
+      value: "資工系",
+    ),
+    DropdownMenuItem(
+      child: Text("電機系"),
+      value: "電機系",
+    ),
+    DropdownMenuItem(
+      child: Text("航太系"),
+      value: "航太系",
+    ),
+    DropdownMenuItem(
+      child: Text("機電系"),
+      value: "機電系",
+    ),
+    DropdownMenuItem(
+      child: Text("工工系"),
+      value: "工工系",
+    ),
+    DropdownMenuItem(
+      child: Text("環工系"),
+      value: "環工系",
+    ),
+    DropdownMenuItem(
+      child: Text("化工系"),
+      value: "化工系",
+    ),
+    DropdownMenuItem(
+      child: Text("材料系"),
+      value: "材料系",
+    ),
+    DropdownMenuItem(
+      child: Text("財金系"),
+      value: "財金系",
+    ),
+    DropdownMenuItem(
+      child: Text("國貿系"),
+      value: "國貿系",
+    ),
+    DropdownMenuItem(
+      child: Text("會計系"),
+      value: "會計系",
+    ),
+    DropdownMenuItem(
+      child: Text("行銷系"),
+      value: "行銷系",
+    ),
+    DropdownMenuItem(
+      child: Text("統計系"),
+      value: "統計系",
+    ),
+    DropdownMenuItem(
+      child: Text("水利系"),
+      value: "水利系",
+    ),
+    DropdownMenuItem(
+      child: Text("土木系"),
+      value: "土木系",
+    ),
+  ];
+
+  var state;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   String registerEmail;
   String registerPassword;
@@ -47,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text("適逢其所"),
@@ -122,6 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               listen: false)
                                           .storedLoginData(
                                               userEmail, userPassword, context);
+                                      print(state);
                                       widget.getState(state); //將登入狀態傳給root用
                                     }
                                     setState(() {
@@ -174,15 +243,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                   userName = value;
                                 },
                               ),
-                              TextFormField(
+                              DropdownButtonFormField(
+                                isExpanded: true,
+                                items: major,
+                                decoration: InputDecoration(labelText: "系所"),
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return "請輸入系所";
+                                  if (value == null) {
+                                    return "請選擇系所";
                                   }
                                   return null;
                                 },
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(labelText: "系所"),
+                                onChanged: (value) {
+                                  setState(() {
+                                    userMajor = value;
+                                  });
+                                },
                                 onSaved: (value) {
                                   userMajor = value;
                                 },
@@ -213,15 +288,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                   registerPassword = value;
                                 },
                               ),
-                              TextFormField(
+                              DropdownButtonFormField(
+                                items: [
+                                  DropdownMenuItem(
+                                      child: Text("男"), value: "男"),
+                                  DropdownMenuItem(child: Text("女"), value: "女")
+                                ],
+                                decoration: InputDecoration(labelText: "性別"),
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value == null) {
                                     return "請輸入性別";
                                   }
                                   return null;
                                 },
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(labelText: "性別"),
+                                onChanged: (value) {
+                                  setState(() {
+                                    userSex = value;
+                                  });
+                                },
                                 onSaved: (value) {
                                   userSex = value;
                                 },
@@ -238,15 +322,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                       IsLoading = !IsLoading;
                                     });
                                     if (valid) {
-                                      await Provider.of<User>(context,
+                                      await Provider.of<User>(
+                                              scaffoldKey.currentContext,
                                               listen: false)
                                           .storedRigisterData(
-                                              registerEmail,
-                                              registerPassword,
-                                              userName,
-                                              userMajor,
-                                              userSex,
-                                              context);
+                                        registerEmail,
+                                        registerPassword,
+                                        userName,
+                                        userMajor,
+                                        userSex,
+                                        scaffoldKey.currentContext,
+                                      );
                                     }
                                     setState(() {
                                       IsLoading = !IsLoading;

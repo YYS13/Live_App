@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class User with ChangeNotifier {
+  var userId;
+  var userData;
   String _userEmail;
   String _userPassword;
   String _userName;
@@ -21,6 +23,7 @@ class User with ChangeNotifier {
     try {
       authResult = await _auth.signInWithEmailAndPassword(
           email: _userEmail, password: _userPassword);
+      userId = authResult.user.uid; //assign id 給global id 變數
       return FirebaseAuth.instance.authStateChanges();
     } on FirebaseAuthException catch (err) {
       print(err);
@@ -35,12 +38,13 @@ class User with ChangeNotifier {
   } //按下登入按鈕執行
 
   void storedRigisterData(
-      String userEmail,
-      String userPassword,
-      String userName,
-      String userMajor,
-      String userSex,
-      BuildContext ctx) async {
+    String userEmail,
+    String userPassword,
+    String userName,
+    String userMajor,
+    String userSex,
+    BuildContext ctx,
+  ) async {
     _userEmail = userEmail;
     _userPassword = userPassword;
     _userName = userName;
@@ -59,7 +63,8 @@ class User with ChangeNotifier {
           .set({
         "username": _userName,
         "major": _userMajor,
-        "Sex": _userSex
+        "Sex": _userSex,
+        "Coins": 100,
       }); //存帳號密碼以外的資料
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text("註冊成功", textAlign: TextAlign.center),

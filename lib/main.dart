@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:live/provider/auth.dart';
 import 'package:live/screens/home.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var LoginState;
 
-  void getState(Stream state) {
+  void getState(state) async {
     setState(() {
       LoginState = state;
     });

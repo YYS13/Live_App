@@ -1,15 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:live/screens/home.dart';
 import 'package:live/screens/post_screen.dart';
 import 'package:live/screens/profile_screen.dart';
 import 'package:live/screens/school_screen.dart';
 import 'package:live/screens/transfer_screen.dart';
+import 'package:provider/provider.dart';
 
 class TabScreen extends StatefulWidget {
-  const TabScreen({Key key}) : super(key: key);
-
   @override
   State<TabScreen> createState() => _TabScreenState();
 }
