@@ -81,11 +81,13 @@ class _LoginScreenState extends State<LoginScreen> {
   ];
 
   var state;
+  final _controller = new TextEditingController();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   String registerEmail;
   String registerPassword;
   String uid;
+  var userStudentId; //學號
   String userName = ""; //姓名
   String userPassword = ""; //密碼
   String userEmail = ""; //信箱
@@ -196,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     setState(() {
                                       IsLoading = !IsLoading;
                                     });
+                                    _controller.clear();
                                   },
                                   child: Text(
                                     "登入",
@@ -228,6 +231,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         : Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "請輸入學號";
+                                  } else if (value.length != 8) {
+                                    return "學號應為8個字浮";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.name,
+                                decoration: InputDecoration(labelText: "學號"),
+                                onSaved: (value) {
+                                  userStudentId = value;
+                                },
+                              ),
                               TextFormField(
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -328,6 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           .storedRigisterData(
                                         registerEmail,
                                         registerPassword,
+                                        userStudentId,
                                         userName,
                                         userMajor,
                                         userSex,
@@ -337,6 +356,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     setState(() {
                                       IsLoading = !IsLoading;
                                     });
+                                    _controller.clear();
                                   },
                                   child: Text(
                                     "確認",

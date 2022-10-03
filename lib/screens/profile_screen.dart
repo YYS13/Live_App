@@ -56,9 +56,10 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               Expanded(
                                   child: Center(
-                                      child: Text(uid,
+                                      child: Text(
+                                          userSnapshot.data["StudentId"],
                                           style: TextStyle(
-                                              fontSize: 13,
+                                              fontSize: 20,
                                               fontWeight: FontWeight.bold))))
                             ],
                           ),

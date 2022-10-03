@@ -10,6 +10,7 @@ class User with ChangeNotifier {
   var userData;
   String _userEmail;
   String _userPassword;
+  var _userStudentId;
   String _userName;
   String _userMajor;
   String _userSex;
@@ -40,11 +41,13 @@ class User with ChangeNotifier {
   void storedRigisterData(
     String userEmail,
     String userPassword,
+    userStudentId,
     String userName,
     String userMajor,
     String userSex,
     BuildContext ctx,
   ) async {
+    _userStudentId = userStudentId;
     _userEmail = userEmail;
     _userPassword = userPassword;
     _userName = userName;
@@ -61,6 +64,7 @@ class User with ChangeNotifier {
           .collection("users")
           .doc(authResult.user.uid)
           .set({
+        "StudentId": _userStudentId,
         "username": _userName,
         "major": _userMajor,
         "Sex": _userSex,
