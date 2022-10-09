@@ -133,13 +133,15 @@ class _PostScreenState extends State<PostScreen> {
                                   .collection("dormitory")
                                   .doc()
                                   .set({
-                                "UserId": _uid,
+                                "PosterId": _uid,
                                 "Poster": _user.get("username"),
                                 "PosterSex": _user.get("Sex"),
                                 "PostType": _postType,
                                 "PostTitle": _postTitle,
                                 "PostContent": _postContent,
                                 "PosterMajor": _user.get("major"),
+                                "Like": 0,
+                                "userLikedPost": [],
                               });
                               setState(() {
                                 _isLoading = !_isLoading;

@@ -68,7 +68,6 @@ class User with ChangeNotifier {
         "username": _userName,
         "major": _userMajor,
         "Sex": _userSex,
-        "Coins": 100,
       }); //存帳號密碼以外的資料
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text("註冊成功", textAlign: TextAlign.center),

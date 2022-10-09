@@ -18,9 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void fetchData() async {
     //抓用戶資料
-    _user =
-        await FirebaseFirestore.instance.collection("users").doc(_uid).get();
-    print(_user);
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(_uid)
+        .get()
+        .then((data) {
+      setState(() {
+        _user = data;
+      });
+    });
   }
 
   @override
@@ -49,6 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 PostTitle: postDoc[index]["PostTitle"],
                 PostContent: postDoc[index]["PostContent"],
                 PostType: postDoc[index]["PostType"],
+                postDocId: postDoc[index].id,
+                userLikedPost: postDoc[index]["userLikedPost"],
+                uid: _uid,
+                likeNumber: postDoc[index]["Like"],
               );
             }),
           );
