@@ -133,8 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 height: 100,
                 width: 200,
-                child: Image.network(
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJOKcvjavatFY3ejDYtad_4biWz6WWrHTGdA&usqp=CAU',
+                child: Image.asset(
+                  'assets/school_icon.jpg',
                   fit: BoxFit.cover,
                 ),
               ),

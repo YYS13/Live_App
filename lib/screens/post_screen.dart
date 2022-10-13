@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class PostScreen extends StatefulWidget {
   @override
@@ -18,6 +20,31 @@ class _PostScreenState extends State<PostScreen> {
   var _postTitle;
   var _postContent;
   bool _isLoading = false;
+  List _images = []; //照片集
+  final imagePicker = ImagePicker();
+  //從相機獲取圖片
+  Future getImageFromCamera() async {
+    final image = await imagePicker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      final imagePath = image.path;
+      setState(() {
+        _images.add(imagePath.toString());
+      });
+    }
+    print(_images);
+  }
+
+  //從相簿獲取照片
+  Future getImageFromGallery() async {
+    final image = await imagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      final imagePath = image.path;
+      setState(() {
+        _images.add(imagePath.toString());
+      });
+    }
+    print(_images);
+  }
 
   void getData() async {
     _user =
@@ -41,14 +68,90 @@ class _PostScreenState extends State<PostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //設定carousell圖片內容樣式
+    final List<Widget> imageSliders = _images
+        .map((item) => Container(
+              child: Container(
+                margin: EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        Image.asset(item, fit: BoxFit.cover, width: 1000.0),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              ),
+                            ),
+                            // padding: EdgeInsets.symmetric(
+                            //     vertical: 10.0, horizontal: 20.0),
+                          ),
+                        ),
+                      ],
+                    )),
+              ),
+            ))
+        .toList();
     return SingleChildScrollView(
       child: Column(children: <Widget>[
         Container(
-          width: double.infinity,
-          color: Colors.black,
-          child: Image.network(
-              "https://i.epochtimes.com/assets/uploads/2018/04/house-3084040_1280-600x400.jpg"),
-        ),
+            width: double.infinity,
+            height: 200,
+            color: Colors.black,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _images.isEmpty
+                    ? Image.network(
+                        "https://static.vecteezy.com/system/resources/previews/004/141/669/original/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg",
+                        fit: BoxFit.cover,
+                      )
+                    : CarouselSlider(
+                        options: CarouselOptions(
+                          enableInfiniteScroll: false,
+                          aspectRatio: 2.0,
+                          enlargeCenterPage: true,
+                        ),
+                        items: imageSliders,
+                      ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        getImageFromCamera();
+                      },
+                      child: Icon(Icons.camera_alt),
+                      style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                          padding: EdgeInsets.all(10),
+                          shape: CircleBorder()),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        getImageFromGallery();
+                      },
+                      child: Icon(Icons.photo),
+                      style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                          padding: EdgeInsets.all(10),
+                          shape: CircleBorder()),
+                    ),
+                  ],
+                )
+              ],
+            )),
         Padding(
           padding: EdgeInsets.all(10),
           child: _isLoading
@@ -142,6 +245,7 @@ class _PostScreenState extends State<PostScreen> {
                                 "PosterMajor": _user.get("major"),
                                 "Like": 0,
                                 "userLikedPost": [],
+                                "images": _images
                               });
                               setState(() {
                                 _isLoading = !_isLoading;
