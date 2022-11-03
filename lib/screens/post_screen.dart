@@ -6,6 +6,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class PostScreen extends StatefulWidget {
   @override
@@ -20,15 +22,16 @@ class _PostScreenState extends State<PostScreen> {
   var _postTitle;
   var _postContent;
   bool _isLoading = false;
-  List _images = []; //照片集
+  List<File> _images = []; //照片集
+  List _imagePath = [];
   final imagePicker = ImagePicker();
   //從相機獲取圖片
   Future getImageFromCamera() async {
     final image = await imagePicker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      final imagePath = image.path;
+      final imagePath = File(image.path);
       setState(() {
-        _images.add(imagePath.toString());
+        _images.add(imagePath);
       });
     }
     print(_images);
@@ -38,9 +41,9 @@ class _PostScreenState extends State<PostScreen> {
   Future getImageFromGallery() async {
     final image = await imagePicker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      final imagePath = image.path;
+      final imagePath = File(image.path);
       setState(() {
-        _images.add(imagePath.toString());
+        _images.add(imagePath);
       });
     }
     print(_images);
@@ -77,7 +80,7 @@ class _PostScreenState extends State<PostScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     child: Stack(
                       children: <Widget>[
-                        Image.asset(item, fit: BoxFit.cover, width: 1000.0),
+                        Image.file(item, fit: BoxFit.cover, width: 1000.0),
                         Positioned(
                           bottom: 0.0,
                           left: 0.0,
@@ -231,11 +234,23 @@ class _PostScreenState extends State<PostScreen> {
                             setState(() {
                               _isLoading = !_isLoading;
                             });
+                            final refDoc = await FirebaseFirestore.instance
+                                .collection("dormitory")
+                                .doc();
+                            final refDocId = refDoc.id;
+                            //存圖片
+                            for (int i = 0; i < _images.length; i++) {
+                              await FirebaseStorage.instance
+                                  .ref("${refDocId}/$i")
+                                  .putFile(_images[i]);
+                              await FirebaseStorage.instance
+                                  .ref("${refDocId}/$i")
+                                  .getDownloadURL()
+                                  .then((value) => _imagePath.add(value));
+                            }
                             try {
-                              FirebaseFirestore.instance
-                                  .collection("dormitory")
-                                  .doc()
-                                  .set({
+                              //存資料
+                              refDoc.set({
                                 "PosterId": _uid,
                                 "Poster": _user.get("username"),
                                 "PosterSex": _user.get("Sex"),
@@ -244,11 +259,16 @@ class _PostScreenState extends State<PostScreen> {
                                 "PostContent": _postContent,
                                 "PosterMajor": _user.get("major"),
                                 "Like": 0,
-                                "userLikedPost": [],
-                                "images": _images
+                                "disLike": 0,
+                                "userDisLikedPost": [],
+                                "userLikedPost": [], //有誰按讚
+                                "authorization": [_uid],
+                                "imagePath": _imagePath,
                               });
                               setState(() {
                                 _isLoading = !_isLoading;
+                                _images = [];
+                                _imagePath = [];
                               });
                             } on FirebaseAuthException catch (err) {
                               setState(() {

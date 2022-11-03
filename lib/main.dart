@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:live/provider/auth.dart';
 import 'package:live/screens/home.dart';
+import 'package:live/screens/post_detail_screen.dart';
 import 'package:live/screens/tab_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,9 @@ class _MyAppState extends State<MyApp> {
             }
           },
         ),
+        routes: {
+          "post-detail": ((context) => PostDetail()),
+        },
       ),
     );
   }

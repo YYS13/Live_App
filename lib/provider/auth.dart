@@ -46,6 +46,8 @@ class User with ChangeNotifier {
     String userMajor,
     String userSex,
     BuildContext ctx,
+    String transcationPassword,
+    String LineId,
   ) async {
     _userStudentId = userStudentId;
     _userEmail = userEmail;
@@ -68,9 +70,12 @@ class User with ChangeNotifier {
         "username": _userName,
         "major": _userMajor,
         "Sex": _userSex,
+        "coin": 100,
+        "transcationPassword": transcationPassword,
+        "LineId": LineId,
       }); //存帳號密碼以外的資料
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text("註冊成功", textAlign: TextAlign.center),
+        content: Text("註冊成功，獲得100逢甲幣", textAlign: TextAlign.center),
         backgroundColor: Colors.green[400],
       ));
     } on FirebaseAuthException catch (err) {
@@ -86,4 +91,10 @@ class User with ChangeNotifier {
     }
     notifyListeners();
   } //按下註冊鍵執行
+
+  getCurrentUserData(String uid) async {
+    var user =
+        await FirebaseFirestore.instance.collection("users").doc(uid).get();
+    return user;
+  }
 }

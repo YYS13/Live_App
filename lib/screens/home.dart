@@ -55,10 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 PostTitle: postDoc[index]["PostTitle"],
                 PostContent: postDoc[index]["PostContent"],
                 PostType: postDoc[index]["PostType"],
-                postDocId: postDoc[index].id,
+                postDocId: postDoc[index].id, //post的id
                 userLikedPost: postDoc[index]["userLikedPost"],
                 uid: _uid,
                 likeNumber: postDoc[index]["Like"],
+                disLikeNumber: postDoc[index]["disLike"],
+                userDisLikedPost: postDoc[index]["userDisLikedPost"],
+                authorization: postDoc[index]["authorization"],
+                imagePath: postDoc[index]["imagePath"],
               );
             }),
           );

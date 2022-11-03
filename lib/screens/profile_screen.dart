@@ -115,6 +115,32 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                         ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.black)),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                          child: Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.attach_money_outlined,
+                                size: 30,
+                              ),
+                              Expanded(
+                                  child: Center(
+                                      child: Text(
+                                userSnapshot.data["coin"].toString(),
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )))
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

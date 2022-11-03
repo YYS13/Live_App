@@ -90,6 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var userStudentId; //學號
   String userName = ""; //姓名
   String userPassword = ""; //密碼
+  String registerTranscationPassword; //交易密碼
+  String LineId; //Line ID (聯絡用)
   String userEmail = ""; //信箱
   String userSex = ""; //性別
   String userMajor = ""; //系所
@@ -236,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (value.isEmpty) {
                                     return "請輸入學號";
                                   } else if (value.length != 8) {
-                                    return "學號應為8個字浮";
+                                    return "學號應為8個字符";
                                   }
                                   return null;
                                 },
@@ -297,13 +299,37 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 validator: (value) {
                                   if (value.isEmpty || value.length < 7) {
-                                    return "密碼長度至少需7個字元";
+                                    return "密碼長度至少需7個字元或數字";
                                   }
                                 },
                                 decoration: InputDecoration(labelText: "密碼"),
                                 obscureText: true,
                                 onSaved: (value) {
                                   registerPassword = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty || value.length < 5) {
+                                    return "密碼長度至少需5個字元或數字";
+                                  }
+                                },
+                                decoration: InputDecoration(labelText: "交易密碼"),
+                                obscureText: true,
+                                onSaved: (value) {
+                                  registerTranscationPassword = value;
+                                },
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "必須輸入聯絡資訊";
+                                  }
+                                },
+                                decoration: InputDecoration(
+                                    labelText: "聯絡資訊", hintText: "Line ID"),
+                                onSaved: (value) {
+                                  LineId = value;
                                 },
                               ),
                               DropdownButtonFormField(
@@ -344,14 +370,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                               scaffoldKey.currentContext,
                                               listen: false)
                                           .storedRigisterData(
-                                        registerEmail,
-                                        registerPassword,
-                                        userStudentId,
-                                        userName,
-                                        userMajor,
-                                        userSex,
-                                        scaffoldKey.currentContext,
-                                      );
+                                              registerEmail,
+                                              registerPassword,
+                                              userStudentId,
+                                              userName,
+                                              userMajor,
+                                              userSex,
+                                              scaffoldKey.currentContext,
+                                              registerTranscationPassword,
+                                              LineId);
                                     }
                                     setState(() {
                                       IsLoading = !IsLoading;
