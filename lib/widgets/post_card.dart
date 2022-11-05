@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class PostCard extends StatefulWidget {
+  var posterId;
   var posterSex;
   var posterMajor;
   var PostType;
@@ -18,7 +19,8 @@ class PostCard extends StatefulWidget {
   var authorization;
   List imagePath;
   PostCard(
-      {this.posterSex,
+      {this.posterId,
+      this.posterSex,
       this.posterMajor,
       this.PostContent,
       this.PostTitle,
@@ -182,6 +184,7 @@ class _PostCardState extends State<PostCard> {
               child: IconButton(
                   onPressed: () {
                     Navigator.pushNamed(context, "post-detail", arguments: {
+                      "posterId": widget.posterId,
                       "content": widget.PostContent,
                       "title": widget.PostTitle,
                       "type": widget.PostType,

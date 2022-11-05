@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: postDoc.length,
             itemBuilder: ((context, index) {
               return PostCard(
+                posterId: postDoc[index]["PosterId"],
                 posterMajor: postDoc[index]["PosterMajor"],
                 posterSex: postDoc[index]["PosterSex"],
                 PostTitle: postDoc[index]["PostTitle"],

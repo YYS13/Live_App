@@ -21,7 +21,6 @@ class _TabScreenState extends State<TabScreen> {
     HomeScreen(),
     TransferScreen(),
     PostScreen(),
-    SchoolScreen(),
     ProfileScreen()
   ];
 
@@ -51,7 +50,6 @@ class _TabScreenState extends State<TabScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首頁"),
           BottomNavigationBarItem(icon: Icon(Icons.credit_card), label: "轉帳"),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: "新增"),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: "學校資源"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "帳戶"),
         ],
       ),

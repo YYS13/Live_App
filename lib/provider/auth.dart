@@ -73,6 +73,7 @@ class User with ChangeNotifier {
         "coin": 100,
         "transcationPassword": transcationPassword,
         "LineId": LineId,
+        "postCount": 0,
       }); //存帳號密碼以外的資料
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text("註冊成功，獲得100逢甲幣", textAlign: TextAlign.center),

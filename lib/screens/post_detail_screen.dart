@@ -11,6 +11,7 @@ class PostDetail extends StatefulWidget {
 }
 
 class _PostDetailState extends State<PostDetail> {
+  String _posterId;
   String _content;
   String _title;
   String _type;
@@ -20,11 +21,13 @@ class _PostDetailState extends State<PostDetail> {
   String _uid;
   String _LineId;
   var _authorization;
+  bool _isPayed;
   List _imagesPath = [];
 
   @override
   Widget build(BuildContext context) {
     dynamic PostArgs = ModalRoute.of(context).settings.arguments;
+    _posterId = PostArgs["posterId"];
     _content = PostArgs["content"];
     _title = PostArgs["title"];
     _type = PostArgs["type"];
@@ -36,8 +39,10 @@ class _PostDetailState extends State<PostDetail> {
     _imagesPath = PostArgs["imagePath"];
 
     getLineId() async {
-      var i =
-          await FirebaseFirestore.instance.collection("users").doc(_uid).get();
+      var i = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(_posterId)
+          .get();
       _LineId = i.get("LineId");
     }
 
@@ -93,44 +98,121 @@ class _PostDetailState extends State<PostDetail> {
                         child: ElevatedButton(
                           onPressed: () {
                             print(_authorization);
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext ctx) {
-                                  return AlertDialog(
-                                    title: Text("注意"),
-                                    content: Text("取得聯絡資訊需支付10逢甲幣，您確定要支付嗎?"),
-                                    actions: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(ctx);
-                                        },
-                                        child: Text("確定"),
-                                        style: ElevatedButton.styleFrom(
-                                            primary:
-                                                Theme.of(context).primaryColor,
-                                            padding: EdgeInsets.all(10),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            )),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(ctx);
-                                        },
-                                        child: Text("取消"),
-                                        style: ElevatedButton.styleFrom(
-                                            primary:
-                                                Theme.of(context).primaryColor,
-                                            padding: EdgeInsets.all(10),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            )),
-                                      )
-                                    ],
-                                  );
-                                });
+                            _authorization.contains(_uid)
+                                ? showDialog(
+                                    context: context,
+                                    builder: (BuildContext ctx) {
+                                      return AlertDialog(
+                                        title: Text("聯絡資訊"),
+                                        content: Text("Line ID : ${_LineId}"),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx);
+                                            },
+                                            child: Text("確定"),
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .primaryColor,
+                                                padding: EdgeInsets.all(10),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                )),
+                                          ),
+                                        ],
+                                      );
+                                    })
+                                : showDialog(
+                                    context: context,
+                                    builder: (BuildContext ctx) {
+                                      return AlertDialog(
+                                        title: Text("注意"),
+                                        content:
+                                            Text("取得聯絡資訊需支付10逢甲幣，您確定要支付嗎?"),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              _authorization.add(_uid);
+                                              await FirebaseFirestore.instance
+                                                  .collection("users")
+                                                  .doc(_uid)
+                                                  .update({
+                                                "coin":
+                                                    FieldValue.increment(-10),
+                                              });
+                                              await FirebaseFirestore.instance
+                                                  .collection("dormitory")
+                                                  .doc(_postId)
+                                                  .update({
+                                                "authorization":
+                                                    FieldValue.arrayUnion(
+                                                        [_uid])
+                                              });
+                                              Navigator.pop(ctx);
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext c) {
+                                                    return AlertDialog(
+                                                      content: Text(
+                                                        "支付成功!!",
+                                                        style: TextStyle(
+                                                          fontSize: 30,
+                                                        ),
+                                                      ),
+                                                      actions: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(c);
+                                                          },
+                                                          child: Text("確定"),
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                                  primary: Theme.of(
+                                                                          context)
+                                                                      .primaryColor,
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  )),
+                                                        )
+                                                      ],
+                                                    );
+                                                  });
+                                            },
+                                            child: Text("確定"),
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .primaryColor,
+                                                padding: EdgeInsets.all(10),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                )),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx);
+                                            },
+                                            child: Text("取消"),
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .primaryColor,
+                                                padding: EdgeInsets.all(10),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                )),
+                                          )
+                                        ],
+                                      );
+                                    });
                           },
                           child: Text(
                             "取得聯絡資訊",

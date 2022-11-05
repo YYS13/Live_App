@@ -270,6 +270,17 @@ class _PostScreenState extends State<PostScreen> {
                                 _images = [];
                                 _imagePath = [];
                               });
+                              if (_user.get("postCount") < 5) {
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(_uid)
+                                    .update({"coin": FieldValue.increment(50)});
+                              }
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(_uid)
+                                  .update(
+                                      {"postCount": FieldValue.increment(1)});
                             } on FirebaseAuthException catch (err) {
                               setState(() {
                                 _isLoading = !_isLoading;
@@ -284,10 +295,19 @@ class _PostScreenState extends State<PostScreen> {
                               ));
                             }
                             ;
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content:
-                                    Text("上傳成功", textAlign: TextAlign.center),
-                                backgroundColor: Colors.green[400]));
+                            if (_user.get("postCount") < 5) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text("上傳成功,獲得50逢甲幣",
+                                          textAlign: TextAlign.center),
+                                      backgroundColor: Colors.green[400]));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text("上傳成功(已達每月貼文獎勵次數(5次))",
+                                          textAlign: TextAlign.center),
+                                      backgroundColor: Colors.green[400]));
+                            }
                           }
                         },
                         child: Text("分享", style: TextStyle(fontSize: 15)),
