@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 
 class PostScreen extends StatefulWidget {
   @override
@@ -135,7 +136,7 @@ class _PostScreenState extends State<PostScreen> {
                       onPressed: () {
                         getImageFromCamera();
                       },
-                      child: Icon(Icons.camera_alt),
+                      child: Icon(Icons.add_a_photo),
                       style: ElevatedButton.styleFrom(
                           primary: Theme.of(context).primaryColor,
                           padding: EdgeInsets.all(10),
@@ -145,7 +146,7 @@ class _PostScreenState extends State<PostScreen> {
                       onPressed: () {
                         getImageFromGallery();
                       },
-                      child: Icon(Icons.photo),
+                      child: Icon(Icons.add_photo_alternate_rounded),
                       style: ElevatedButton.styleFrom(
                           primary: Theme.of(context).primaryColor,
                           padding: EdgeInsets.all(10),
@@ -264,6 +265,8 @@ class _PostScreenState extends State<PostScreen> {
                                 "userLikedPost": [], //有誰按讚
                                 "authorization": [_uid],
                                 "imagePath": _imagePath,
+                                "date": DateFormat("yyyy/MM/dd")
+                                    .format(DateTime.now()),
                               });
                               setState(() {
                                 _isLoading = !_isLoading;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   var uid = FirebaseAuth.instance.currentUser.uid.toString();
@@ -149,7 +150,40 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      FirebaseAuth.instance.signOut();
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) {
+                            return AlertDialog(
+                              content: Text("您確定要登出嗎?"),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(ctx);
+                                    FirebaseAuth.instance.signOut();
+                                  },
+                                  child: Text("確定"),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context).primaryColor,
+                                      padding: EdgeInsets.all(10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      )),
+                                ),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Theme.of(context).primaryColor,
+                                        padding: EdgeInsets.all(10),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        )),
+                                    onPressed: () {
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Text("取消")),
+                              ],
+                            );
+                          });
                     },
                     child: Text(
                       "登出",

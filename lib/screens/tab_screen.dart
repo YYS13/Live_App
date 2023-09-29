@@ -7,8 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:live/screens/home.dart';
 import 'package:live/screens/post_screen.dart';
 import 'package:live/screens/profile_screen.dart';
-import 'package:live/screens/school_screen.dart';
 import 'package:live/screens/transfer_screen.dart';
+import '../screens/manage_screen.dart';
 import 'package:provider/provider.dart';
 
 class TabScreen extends StatefulWidget {

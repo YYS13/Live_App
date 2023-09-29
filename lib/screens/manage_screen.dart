@@ -6,12 +6,12 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:live/widgets/post_card.dart';
 
-class HomeScreen extends StatefulWidget {
+class ManageScreen extends StatefulWidget {
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<ManageScreen> createState() => _ManageScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ManageScreenState extends State<ManageScreen> {
   final routeName = "/home";
   var _user;
   var _uid = FirebaseAuth.instance.currentUser.uid;
@@ -38,7 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("dormitory").snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection("dormitory")
+            .where("PosterId", isEqualTo: _uid)
+            .snapshots(),
         builder: (context, postSnapshot) {
           if (postSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -46,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
           final postDoc = postSnapshot.data.docs;
+          print(postDoc);
           return ListView.builder(
             itemCount: postDoc.length,
             itemBuilder: ((context, index) {
@@ -64,7 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 userDisLikedPost: postDoc[index]["userDisLikedPost"],
                 authorization: postDoc[index]["authorization"],
                 imagePath: postDoc[index]["imagePath"],
-                date: postDoc[index]["date"],
               );
             }),
           );

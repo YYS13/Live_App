@@ -23,6 +23,7 @@ class _PostDetailState extends State<PostDetail> {
   var _authorization;
   bool _isPayed;
   List _imagesPath = [];
+  String _date;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +38,7 @@ class _PostDetailState extends State<PostDetail> {
     _uid = PostArgs["uid"];
     _authorization = PostArgs["authorization"];
     _imagesPath = PostArgs["imagePath"];
+    _date = PostArgs["date"];
 
     getLineId() async {
       var i = await FirebaseFirestore.instance
@@ -227,8 +229,14 @@ class _PostDetailState extends State<PostDetail> {
                         ))
                   ],
                 ),
+                Text(
+                  _date,
+                  style: TextStyle(fontSize: 20, color: Colors.grey[500]
+                      // color: Colors.white
+                      ),
+                ),
                 SizedBox(
-                  height: 12,
+                  height: 15,
                 ),
                 Text(
                   _title,

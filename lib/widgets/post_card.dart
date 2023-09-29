@@ -17,6 +17,7 @@ class PostCard extends StatefulWidget {
   var disLikeNumber;
   var userDisLikedPost;
   var authorization;
+  var date;
   List imagePath;
   PostCard(
       {this.posterId,
@@ -32,7 +33,8 @@ class PostCard extends StatefulWidget {
       this.disLikeNumber,
       this.userDisLikedPost,
       this.authorization,
-      this.imagePath});
+      this.imagePath,
+      this.date});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -54,154 +56,150 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Row(
-          children: <Widget>[
-            Flexible(
-              flex: 9,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      CircleAvatar(
-                        backgroundColor: widget.posterSex == "男"
-                            ? Colors.blue[800]
-                            : Colors.pink,
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(widget.posterMajor),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      child: Text(
-                    widget.PostTitle,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  )),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                          onPressed: () {
-                            if (_disLike) return;
-                            setState(() {
-                              _IsLike = !_IsLike;
-                            });
-                            if (_IsLike) {
-                              print(widget.postDocId);
-                              FirebaseFirestore.instance
-                                  .collection("dormitory")
-                                  .doc(widget.postDocId)
-                                  .update({
-                                "Like": FieldValue.increment(1),
-                                "userLikedPost":
-                                    FieldValue.arrayUnion([widget.uid])
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, "post-detail", arguments: {
+          "posterId": widget.posterId,
+          "content": widget.PostContent,
+          "title": widget.PostTitle,
+          "type": widget.PostType,
+          "postId": widget.postDocId,
+          "major": widget.posterMajor,
+          "sex": widget.posterSex,
+          "uid": widget.uid,
+          "authorization": widget.authorization,
+          "imagePath": widget.imagePath,
+          "date": widget.date,
+        });
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                flex: 9,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        CircleAvatar(
+                          backgroundColor: widget.posterSex == "男"
+                              ? Colors.blue[800]
+                              : Colors.pink,
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(widget.posterMajor),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                        child: Text(
+                      widget.PostTitle,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    )),
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                            onPressed: () {
+                              if (_disLike) return;
+                              setState(() {
+                                _IsLike = !_IsLike;
                               });
-                            }
-                            if (_IsLike == false) {
-                              FirebaseFirestore.instance
-                                  .collection("dormitory")
-                                  .doc(widget.postDocId)
-                                  .update({
-                                "Like": FieldValue.increment(-1),
-                                "userLikedPost":
-                                    FieldValue.arrayRemove([widget.uid])
+                              if (_IsLike) {
+                                print(widget.postDocId);
+                                FirebaseFirestore.instance
+                                    .collection("dormitory")
+                                    .doc(widget.postDocId)
+                                    .update({
+                                  "Like": FieldValue.increment(1),
+                                  "userLikedPost":
+                                      FieldValue.arrayUnion([widget.uid])
+                                });
+                              }
+                              if (_IsLike == false) {
+                                FirebaseFirestore.instance
+                                    .collection("dormitory")
+                                    .doc(widget.postDocId)
+                                    .update({
+                                  "Like": FieldValue.increment(-1),
+                                  "userLikedPost":
+                                      FieldValue.arrayRemove([widget.uid])
+                                });
+                              }
+                            },
+                            icon: Icon(Icons.thumb_up),
+                            color: _IsLike
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey),
+                        Text(widget.likeNumber.toString()),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              if (_IsLike) return;
+                              setState(() {
+                                _disLike = !_disLike;
                               });
-                            }
-                          },
-                          icon: Icon(Icons.thumb_up),
-                          color: _IsLike
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey),
-                      Text(widget.likeNumber.toString()),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            if (_IsLike) return;
-                            setState(() {
-                              _disLike = !_disLike;
-                            });
-                            if (_disLike) {
-                              FirebaseFirestore.instance
-                                  .collection("dormitory")
-                                  .doc(widget.postDocId)
-                                  .update({
-                                "disLike": FieldValue.increment(1),
-                                "userDisLikedPost":
-                                    FieldValue.arrayUnion([widget.uid])
-                              });
-                            }
-                            if (_disLike == false) {
-                              FirebaseFirestore.instance
-                                  .collection("dormitory")
-                                  .doc(widget.postDocId)
-                                  .update({
-                                "disLike": FieldValue.increment(-1),
-                                "userDisLikedPost":
-                                    FieldValue.arrayRemove([widget.uid])
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.thumb_down),
-                          color: _disLike ? Colors.blue[500] : Colors.grey),
-                      Text(widget.disLikeNumber.toString()),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 5),
-                          child: Text(
-                            "#" + widget.PostType,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              if (_disLike) {
+                                FirebaseFirestore.instance
+                                    .collection("dormitory")
+                                    .doc(widget.postDocId)
+                                    .update({
+                                  "disLike": FieldValue.increment(1),
+                                  "userDisLikedPost":
+                                      FieldValue.arrayUnion([widget.uid])
+                                });
+                              }
+                              if (_disLike == false) {
+                                FirebaseFirestore.instance
+                                    .collection("dormitory")
+                                    .doc(widget.postDocId)
+                                    .update({
+                                  "disLike": FieldValue.increment(-1),
+                                  "userDisLikedPost":
+                                      FieldValue.arrayRemove([widget.uid])
+                                });
+                              }
+                            },
+                            icon: Icon(Icons.thumb_down),
+                            color: _disLike ? Colors.blue[500] : Colors.grey),
+                        Text(widget.disLikeNumber.toString()),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 5),
+                            child: Text(
+                              "#" + widget.PostType,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      )
-                    ],
-                  )
-                ],
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Flexible(
-              flex: 3,
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "post-detail", arguments: {
-                      "posterId": widget.posterId,
-                      "content": widget.PostContent,
-                      "title": widget.PostTitle,
-                      "type": widget.PostType,
-                      "postId": widget.postDocId,
-                      "major": widget.posterMajor,
-                      "sex": widget.posterSex,
-                      "uid": widget.uid,
-                      "authorization": widget.authorization,
-                      "imagePath": widget.imagePath
-                    });
-                  },
-                  icon: Icon(
-                    Icons.remove_red_eye,
-                    size: 50,
-                  )),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
